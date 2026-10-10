@@ -204,9 +204,10 @@ async function claudeに聞く(prompt) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 設定.モデル ?? 'claude-sonnet-5',
-        max_tokens: 8000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 設定.検索回数 ?? 8 }],
+        model: 設定.モデル ?? 'claude-sonnet-5-5',
+        // 返しの JSON が途中で切れないように（福井版で 8000 では切れた。2026-10-08）
+        max_tokens: 16000,
+        tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 設定.検索回数 ?? 8 }],
         messages
       })
     });
