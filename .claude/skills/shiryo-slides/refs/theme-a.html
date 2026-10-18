@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>問い合わせ対応の一次回答支援 ご提案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Source+Code+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f6f8fd; --ink:#0f172a; --sub:#64748b; --dim:#7c8ba1; --line:#e2e8f0;
+  --accent:#3d5dc6; --accent-deep:#2e47a6; --accent-tint:#eef2fb;
+  --ink-surface:#324c9e; --on-dark:#ffffff; --accent-on-dark:#aec2f2; --line-on-dark:#5570b8;
+  --radius:4px;
+  --ff:"Noto Sans JP","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  --ff-en:"Source Code Pro","SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);overflow:hidden}
+.s{
+  position:absolute;top:50%;left:50%;width:960px;height:540px;
+  transform:translate(-50%,-50%) scale(var(--k,1));transform-origin:center center;
+  background:var(--bg);color:var(--ink);font-family:var(--ff);
+  visibility:hidden;opacity:0;display:flex;flex-direction:column;
+  padding:44px 56px 38px;
+}
+.s.active{visibility:visible;opacity:1}
+h1{font-size:56px;font-weight:700;line-height:1.22;letter-spacing:-.015em;margin:0}
+h2{font-size:28px;font-weight:700;line-height:1.35;letter-spacing:-.01em;margin:0}
+p{margin:0}
+strong{font-weight:700}
+.ki{font-family:var(--ff-en);font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--dim);margin-bottom:10px}
+.hr{height:1px;background:var(--line);margin:13px 0 20px}
+.pn{position:absolute;bottom:16px;right:20px;font-family:var(--ff-en);font-size:10px;color:var(--dim);letter-spacing:.08em}
+.body{flex:1;display:flex;flex-direction:column;gap:18px}
+.lead{font-size:15px;line-height:1.85;color:var(--sub);max-width:54em}
+.note{font-size:12px;line-height:1.8;color:var(--dim);padding-left:1.1em;text-indent:-1.1em}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius)}
+.pill{background:var(--accent-tint);color:var(--ink);padding:10px 18px;border-radius:var(--radius);font-weight:700;font-size:14.5px;white-space:nowrap}
+.arw{color:var(--accent-deep);font-size:18px;font-weight:700;line-height:1}
+.num{font-family:var(--ff-en);font-weight:700;color:var(--accent-deep);line-height:1}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:11px;font-family:var(--ff-en);letter-spacing:.14em;color:var(--dim);font-weight:600;padding:0 0 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:11px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.8}
+.tbl td:first-child{padding-right:26px;width:38%;font-weight:700}
+.tbl tr:last-child td{border-bottom:none}
+</style>
+</head>
+
+<body>
+<!-- kit:slide-zukai-kit v1.0 theme:A use:proposal -->
+
+<!--
+  テーマ A 実装値リファレンス
+
+  これは実例集であって雛形ではない。骨格をなぞらず、
+  クラス設計・密度・色の当て方・罫線の引き方だけを拾うこと。
+  構成は毎回、内容から設計する（core/structure.md §1）。
+-->
+
+<div class="s active">
+  <div class="ki">SECTION 01</div>
+  <h2>ご提案の概要</h2>
+  <div class="hr"></div>
+  <div class="body">
+    <p class="lead">問い合わせの一次回答をゼロから書く工程を、過去の対応履歴をもとにした下書き生成に置き換えるご提案です。送信前の確認は必ず担当者が行います。</p>
+    <div style="display:flex;align-items:stretch;gap:0;flex:1;margin-top:4px">
+      <div style="flex:1;padding:22px 26px 22px 0;border-right:1px solid var(--line)">
+        <div class="ki" style="margin-bottom:12px">現状</div>
+        <div style="font-size:18px;font-weight:700;line-height:1.5;margin-bottom:10px">回答を毎回<br>ゼロから書いている</div>
+        <p style="font-size:13.5px;line-height:1.85;color:var(--sub)">過去の似た対応を探すところから始まり、担当者ごとに書き方も変わります。</p>
+      </div>
+      <div style="flex:1;padding:22px 26px;border-right:1px solid var(--line)">
+        <div class="ki" style="margin-bottom:12px">ご提案</div>
+        <div style="font-size:18px;font-weight:700;line-height:1.5;margin-bottom:10px;color:var(--accent-deep)">下書きが<br>用意された状態にする</div>
+        <p style="font-size:13.5px;line-height:1.85;color:var(--sub)">過去の対応履歴と社内文書を横断して探し、一次回答の案を提示します。</p>
+      </div>
+      <div style="flex:1;padding:22px 0 22px 26px">
+        <div class="ki" style="margin-bottom:12px">目指す状態</div>
+        <div style="font-size:18px;font-weight:700;line-height:1.5;margin-bottom:10px">確認して送る<br>作業に変わる</div>
+        <p style="font-size:13.5px;line-height:1.85;color:var(--sub)">担当者の仕事は、書くことから内容を確かめることへ移ります。</p>
+      </div>
+    </div>
+  </div>
+  <div class="pn">01 / 6</div>
+</div>
+
+<div class="s">
+  <div class="ki">SECTION 02</div>
+  <h2>現状の業務フロー</h2>
+  <div class="hr"></div>
+  <div class="body">
+    <p class="lead">一次回答が送信されるまでに、担当者は 6 つの工程を通ります。</p>
+    <div style="margin-top:18px">
+      <div style="display:flex;height:132px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line)">
+        <div style="flex:8;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;border-right:1px solid var(--line)">受付</div>
+        <div style="flex:12;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;border-right:1px solid var(--line)">内容の確認</div>
+        <div style="flex:30;background:var(--accent-tint);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border-right:1px solid var(--line)">過去の類似対応を探す</div>
+        <div style="flex:28;background:var(--accent-tint);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border-right:1px solid var(--line)">回答文の作成</div>
+        <div style="flex:14;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;border-right:1px solid var(--line)">上長確認</div>
+        <div style="flex:8;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700">送信</div>
+      </div>
+      <div style="display:flex;margin-top:12px">
+        <div style="flex:20"></div>
+        <div style="flex:58;border-top:2px solid var(--accent-deep);padding-top:10px;text-align:center;font-size:14.5px;font-weight:700;color:var(--accent-deep)">所要時間のおよそ 6 割がこの 2 工程に集まります</div>
+        <div style="flex:22"></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:24px">※ 比率は現場ヒアリングにもとづく概算です。正確な計測値は導入前の棚卸しで確定します。</p>
+  </div>
+  <div class="pn">02 / 6</div>
+</div>
+
+<div class="s">
+  <div class="ki">SECTION 04</div>
+  <h2>ご提案内容</h2>
+  <div class="hr"></div>
+  <div class="body">
+    <div style="display:flex;gap:0;align-items:stretch;flex:1">
+      <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-right:none;border-radius:var(--radius) 0 0 var(--radius);padding:26px 30px;display:flex;flex-direction:column">
+        <div class="ki" style="margin-bottom:14px">BEFORE</div>
+        <div style="font-size:19px;font-weight:700;line-height:1.45;margin-bottom:16px">担当者が<br>探して、書いて、送る</div>
+        <div style="display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.75;color:var(--sub)">
+          <div>・ 置き場所ごとに過去対応を探します</div>
+          <div>・ 文面をゼロから組み立てます</div>
+          <div>・ 表現と社内表記を都度調整します</div>
+        </div>
+      </div>
+      <div style="flex:1;background:var(--ink-surface);color:var(--on-dark);border-radius:0 var(--radius) var(--radius) 0;padding:26px 30px;display:flex;flex-direction:column">
+        <div class="ki" style="color:var(--accent-on-dark);margin-bottom:14px">AFTER</div>
+        <div style="font-size:19px;font-weight:700;line-height:1.45;margin-bottom:16px">下書きを<br>確かめて、直して、送る</div>
+        <div style="display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.75;color:var(--on-dark)">
+          <div>・ 過去対応と社内文書を横断して検索します</div>
+          <div>・ 一次回答の案が提示されます</div>
+          <div>・ 担当者は内容を確認して送信します</div>
+        </div>
+      </div>
+    </div>
+    <p class="note">※ 送信前の確認は必ず担当者が行います。自動送信は行いません。</p>
+  </div>
+  <div class="pn">03 / 6</div>
+</div>
+
+<div class="s">
+  <div class="ki">SECTION 05</div>
+  <h2>進め方</h2>
+  <div class="hr"></div>
+  <div class="body">
+    <p class="lead">3 つの段階に分けて進めます。次の段階へ進むかどうかは、その都度ご判断いただきます。</p>
+    <div style="display:flex;gap:30px;margin-top:26px;flex:1">
+      <div style="flex:1;border-top:3px solid var(--accent);padding-top:20px">
+        <div class="ki" style="margin-bottom:9px">PHASE 01</div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:12px">棚卸し</div>
+        <p style="font-size:14.5px;line-height:1.95;color:var(--sub)">問い合わせの種類と件数、対応記録の置き場所を整理します。対象範囲をここで確定します。</p>
+      </div>
+      <div style="width:1px;background:var(--line)"></div>
+      <div style="flex:1;border-top:3px solid var(--accent);padding-top:20px">
+        <div class="ki" style="margin-bottom:9px">PHASE 02</div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:12px">試験運用</div>
+        <p style="font-size:14.5px;line-height:1.95;color:var(--sub)">対象を絞って下書き生成を試します。実際の回答と比べ、使える水準かを確かめます。</p>
+      </div>
+      <div style="width:1px;background:var(--line)"></div>
+      <div style="flex:1;border-top:3px solid var(--accent);padding-top:20px">
+        <div class="ki" style="margin-bottom:9px">PHASE 03</div>
+        <div style="font-size:19px;font-weight:700;margin-bottom:12px">適用範囲の拡大</div>
+        <p style="font-size:14.5px;line-height:1.95;color:var(--sub)">試験運用の結果をもとに対象を広げ、運用の手順を定着させます。</p>
+      </div>
+    </div>
+  </div>
+  <div class="pn">04 / 6</div>
+</div>
+
+<div class="s">
+  <div class="ki">SECTION 06</div>
+  <h2>次のステップ</h2>
+  <div class="hr"></div>
+  <div class="body">
+    <p class="lead">棚卸しを始めるにあたり、次の 3 点をお願いいたします。</p>
+    <div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+      <div style="display:flex;gap:22px;padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline">
+        <div class="num" style="font-size:15px;width:26px;flex:none">01</div>
+        <div style="font-size:15.5px;line-height:1.75">対象とする問い合わせの範囲を<strong>ご確定ください</strong></div>
+      </div>
+      <div style="display:flex;gap:22px;padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline">
+        <div class="num" style="font-size:15px;width:26px;flex:none">02</div>
+        <div style="font-size:15.5px;line-height:1.75">過去 6 か月分の対応記録を<strong>ご共有ください</strong></div>
+      </div>
+      <div style="display:flex;gap:22px;padding:20px 0;align-items:baseline">
+        <div class="num" style="font-size:15px;width:26px;flex:none">03</div>
+        <div style="font-size:15.5px;line-height:1.75">窓口となるご担当者を<strong>ご指名ください</strong></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px">※ ご共有いただいたのち、2 週間程度で棚卸しの結果をご報告いたします。</p>
+  </div>
+  <div class="pn">05 / 6</div>
+</div>
+
+<script>
+function fit(){document.documentElement.style.setProperty('--k',Math.min(innerWidth/960,innerHeight/540))}
+addEventListener('resize',fit);fit();
+let i=0;const slides=document.querySelectorAll('.s');
+function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach((el,j)=>el.classList.toggle('active',j===i))}
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(i+1);if(e.key==='ArrowLeft')show(i-1)});
+show(0);
+</script>
+</body>
+</html>
