@@ -35,6 +35,7 @@ from zoneinfo import ZoneInfo
 import お得日
 import 商品
 import 宿
+import 使用量  # AI を呼ぶごとに使った量を残す（金額は書かない。2026-10-19）
 
 JST = ZoneInfo("Asia/Tokyo")
 QUEUE_PATH = Path("posts/queue.jsonl")
@@ -310,7 +311,10 @@ def api_request(method: str, path: str, api_key: str, body: dict | None = None) 
     request.add_header("content-type", "application/json")
     try:
         with urllib.request.urlopen(request, timeout=180) as response:
-            return json.loads(response.read().decode("utf-8"))
+            結果 = json.loads(response.read().decode("utf-8"))
+        if path == "/messages" and body:
+            使用量.記録("翌日ぶんの作成", body.get("model", ""), 結果.get("usage"))
+        return 結果
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")[:500]
         fail(f"Anthropic API エラー ({exc.code}): {detail}")

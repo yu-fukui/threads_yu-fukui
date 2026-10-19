@@ -413,7 +413,11 @@ def anthropic_request(path: str, body: dict | None, api_key: str) -> dict:
     request.add_header("anthropic-version", ANTHROPIC_VERSION)
     request.add_header("content-type", "application/json")
     with urllib.request.urlopen(request, timeout=120) as response:
-        return json.loads(response.read().decode("utf-8"))
+        結果 = json.loads(response.read().decode("utf-8"))
+    if path == "/messages" and body:
+        import 使用量  # AI を呼ぶごとに使った量を残す（金額は書かない。2026-10-19）
+        使用量.記録("日次レビュー", body.get("model", ""), 結果.get("usage"))
+    return 結果
 
 
 def pick_model(api_key: str) -> str:

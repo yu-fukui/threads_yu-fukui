@@ -28,6 +28,8 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import 使用量  # AI を呼ぶごとに使った量を残す（金額は書かない。2026-10-19）
 from zoneinfo import ZoneInfo
 
 JST = ZoneInfo("Asia/Tokyo")
@@ -199,6 +201,7 @@ def 聞く(api_key: str, model: str, prompt: str, max_tokens: int = 8000) -> str
     try:
         with urllib.request.urlopen(req, timeout=240) as res:
             data = json.loads(res.read().decode())
+        使用量.記録("美容の投稿", model, data.get("usage"))
     except urllib.error.HTTPError as e:
         止まる(f"Anthropic API エラー ({e.code}): {e.read().decode(errors='replace')[:400]}")
     return "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
@@ -231,6 +234,7 @@ def 読みながら聞く(api_key: str, model: str, prompt: str, max_tokens: int
         try:
             with urllib.request.urlopen(req, timeout=300) as res:
                 data = json.loads(res.read().decode())
+            使用量.記録("美容の投稿（ページを読む）", model, data.get("usage"))
         except urllib.error.HTTPError as e:
             止まる(f"Anthropic API エラー ({e.code}): {e.read().decode(errors='replace')[:400]}")
         使った = sum(1 for b in data.get("content", []) if b.get("type") == "server_tool_use")

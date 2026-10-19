@@ -18,7 +18,7 @@
  * ------------------------------------------------------------------
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
 
 const 設定パス = 'neta/設定.json';
 const ネタ帳パス = 'neta/ネタ帳.md';
@@ -189,6 +189,22 @@ if (書かない) {
 //  小物
 // ==================================================================
 
+// AI を呼んだ量を state/usage.jsonl に1行残す（scripts/使用量.py と同じ形。公開なので金額は書かない。2026-10-19）
+function 使用量を記録する(モデル, u) {
+  try {
+    const 時刻 = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 19) + '+09:00';
+    const 起動 = ['repository_dispatch', 'schedule'].includes(process.env.GITHUB_EVENT_NAME) ? '定期' : '手動';
+    mkdirSync('state', { recursive: true });
+    appendFileSync('state/usage.jsonl', JSON.stringify({
+      時刻, 何: '情報集め', モデル,
+      入力: (u.input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0), 出力: u.output_tokens ?? 0,
+      検索: u.server_tool_use?.web_search_requests ?? 0, 起動
+    }) + '\n');
+  } catch (e) {
+    console.log(`::warning::使用量を記録できませんでした（${e.message}）`);
+  }
+}
+
 async function claudeに聞く(prompt) {
   // web_search（サーバー側ツール）は途中で stop_reason: "pause_turn" を返して
   // 「続きを頼む」ことがある。その場合は返ってきた content をそのまま assistant として
@@ -216,6 +232,7 @@ async function claudeに聞く(prompt) {
       throw new Error(`Anthropic API が ${res.status} を返しました: ${(await res.text()).slice(0, 500)}`);
     }
     data = await res.json();
+    使用量を記録する(設定.モデル ?? 'claude-sonnet-5-5', data.usage ?? {});
     console.log(`API 応答: stop_reason=${data.stop_reason} / content=${(data.content ?? []).length}ブロック（${回 + 1}回目）`);
     if (data.stop_reason !== 'pause_turn') break;
     messages.push({ role: 'assistant', content: data.content });
