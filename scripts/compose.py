@@ -1340,6 +1340,7 @@ def main() -> None:
     posts = generate(api_key, model, prompt, len(needed))
 
     by_hour = {int(p["hour"]): p for p in posts}
+    print(f"返ってきた枠: {sorted(by_hour)}（頼んだ枠: {[h for h, *_ in needed]}）")
     new_lines = []
     # その日すでにキューに入っている投稿の出典も数に入れる。
     # YU さんの指示で入れたものは例外なので、note に「指示」と書いてあれば数えない。
