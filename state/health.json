@@ -1,6 +1,6 @@
 {
   "リポジトリ": "yu-fukui/threads_yu-fukui",
-  "作成時刻": "2026-10-19 20:26 JST",
+  "作成時刻": "2026-10-19 20:37 JST",
   "今日": "2026-10-19",
   "状態": "ok",
   "明日のキュー": {
@@ -100,14 +100,14 @@
       "ファイル": "health-snapshot.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-10-19 20:26 JST",
+        "時刻": "2026-10-19 20:37 JST",
         "結果": "in_progress",
         "きっかけ": "workflow_run",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39244613908"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39245993720"
       },
-      "最後の成功": "2026-10-18 23:43 JST",
+      "最後の成功": "2026-10-19 20:26 JST",
       "今日走ったか": true,
-      "24時間の実行": 4,
+      "24時間の実行": 5,
       "24時間の失敗": 0,
       "最後の失敗": {
         "時刻": "2026-10-06 04:40 JST",
@@ -140,14 +140,14 @@
       "ファイル": "test.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-10-19 12:32 JST",
+        "時刻": "2026-10-19 20:36 JST",
         "結果": "success",
         "きっかけ": "push",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39195181471"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39245881353"
       },
-      "最後の成功": "2026-10-19 12:32 JST",
+      "最後の成功": "2026-10-19 20:36 JST",
       "今日走ったか": true,
-      "24時間の実行": 3,
+      "24時間の実行": 4,
       "24時間の失敗": 0,
       "判定": "成功"
     },
@@ -172,14 +172,14 @@
       "ファイル": "threads-compose.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-10-19 20:25 JST",
+        "時刻": "2026-10-19 20:36 JST",
         "結果": "success",
         "きっかけ": "workflow_dispatch",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39244508886"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39245881543"
       },
-      "最後の成功": "2026-10-19 20:25 JST",
+      "最後の成功": "2026-10-19 20:36 JST",
       "今日走ったか": true,
-      "24時間の実行": 3,
+      "24時間の実行": 4,
       "24時間の失敗": 0,
       "最後の失敗": {
         "時刻": "2026-09-25 20:00 JST",
@@ -192,12 +192,12 @@
       "ファイル": "threads-post.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-10-19 20:20 JST",
+        "時刻": "2026-10-19 20:30 JST",
         "結果": "success",
         "きっかけ": "repository_dispatch",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39243918065"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39245134359"
       },
-      "最後の成功": "2026-10-19 20:20 JST",
+      "最後の成功": "2026-10-19 20:30 JST",
       "今日走ったか": true,
       "24時間の実行": 100,
       "24時間の失敗": 0,
@@ -256,16 +256,16 @@
       "ファイル": "pages-build-deployment",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-10-19 20:01 JST",
-        "結果": "success",
+        "時刻": "2026-10-19 20:37 JST",
+        "結果": "in_progress",
         "きっかけ": "dynamic",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39241597359"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/39245983336"
       },
-      "最後の成功": "2026-10-19 20:01 JST",
+      "最後の成功": "2026-10-19 20:36 JST",
       "今日走ったか": true,
-      "24時間の実行": 19,
+      "24時間の実行": 22,
       "24時間の失敗": 0,
-      "判定": "成功"
+      "判定": "実行中"
     }
   ]
 }
