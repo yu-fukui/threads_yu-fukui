@@ -37,7 +37,8 @@ jobs:
       # ドキュメント ID は秘密ではないので Variables に置く
       BOARD_DOC_ID: ${{ vars.BOARD_DOC_ID }}
       NETA_DOC_ID: ${{ vars.NETA_DOC_ID }}
-      ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+      # 2026-10-19 代表「安いモデルにして」：自動選び（Opus）をやめ、Sonnet 5.5 に固定する
+      ANTHROPIC_MODEL: claude-sonnet-5-5
       ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
     steps:
       - uses: actions/checkout@v4

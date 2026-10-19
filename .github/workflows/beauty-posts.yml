@@ -43,7 +43,8 @@ jobs:
       issues: write
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+      # 2026-10-19 代表「安いモデルにして」：自動選び（Opus）をやめ、Sonnet 5.5 に固定する
+      ANTHROPIC_MODEL: claude-sonnet-5-5
       TARGET_DATE: ${{ github.event.client_payload.target_date }}
       DRY_RUN: ${{ github.event.client_payload.dry_run && '1' || '' }}
     steps:
