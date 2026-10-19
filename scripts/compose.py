@@ -811,8 +811,9 @@ def parse_posts(text: str) -> list[dict]:
         for key, value in zip(tokens[1::2], tokens[2::2]):
             value = value.strip()
             if key == "HOUR:":
-                digits = re.sub(r"\D", "", value)
-                item["hour"] = int(digits) if digits else None
+                # 「11」「11時」「11:00」のどれでも時だけを取る（2026-10-19、Sonnet が「11:00」と書き、1100 時と読んで全部の枠が空になった）
+                m = re.match(r"\s*(\d{1,2})", value)
+                item["hour"] = int(m.group(1)) if m else None
             elif key == "NOTE:":
                 item["note"] = value
             elif key == "TEXT:":

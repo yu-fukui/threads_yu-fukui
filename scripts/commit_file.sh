@@ -15,19 +15,21 @@ if [ "${DRY_RUN:-false}" = "true" ]; then
   exit 0
 fi
 
-if git diff --quiet -- "${TARGET}"; then
+# まだ git に入っていない新しいファイル（state/usage.jsonl など）も拾うため、add してから index で比べる
+# （2026-10-19、新しい使用量の記録が「変更なし」と見なされ、残らなかった）
+git add -f -- "${TARGET}" 2>/dev/null || true
+if git diff --cached --quiet -- "${TARGET}"; then
   echo "${TARGET} に変更なし。コミットはしません。"
   exit 0
 fi
 
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git add "${TARGET}"
-git commit -m "${MESSAGE}"
+git commit -m "${MESSAGE}" -- "${TARGET}"
 
 # 画面や他のワークフローからの編集と衝突しうるので、rebase してから push する
 for attempt in 1 2 3 4; do
-  if git pull --rebase origin "${GITHUB_REF_NAME}" && git push; then
+  if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
     exit 0
   fi
   wait=$((2 ** attempt))
