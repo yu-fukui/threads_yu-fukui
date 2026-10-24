@@ -64,8 +64,9 @@ jobs:
           T=$(printf '%s' "$TITLE" | python3 -c "import sys,unicodedata;print(unicodedata.normalize('NFKC',sys.stdin.read()))")
           PICK=$(printf '%s' "$T" | sed -nE 's/^美容[[:space:]]*([0-9]+).*/\1/p')
           LINK=$(printf '%s' "$T" | grep -oE 'https://a\.r10\.to/[A-Za-z0-9]{5,8}' | head -1 || true)
-          if [ -z "$PICK" ] || [ -z "$LINK" ]; then
-            echo "::error::タイトルから番号と短縮リンクが読めません：$TITLE"
+          # 短縮リンクは無くてもよい（2026-10-24。無ければ候補の長いアフィリエイトURLを使う。成果は同じ）
+          if [ -z "$PICK" ]; then
+            echo "::error::タイトルから番号が読めません：$TITLE"
             exit 1
           fi
           echo "pick=$PICK" >> "$GITHUB_OUTPUT"
