@@ -58,7 +58,7 @@ jobs:
           fi
           git commit -m "chore(balance): $(TZ=Asia/Tokyo date '+%F %H:%M') の残高チェック結果"
           for attempt in 1 2 3 4; do
-            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push; then
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
               exit 0
             fi
             wait=$((2 ** attempt))

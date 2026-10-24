@@ -96,7 +96,7 @@ jobs:
           git add "neta/美容_下見.md"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "chore(美容): 下見"
-          git pull --rebase origin "${GITHUB_REF_NAME}" && git push
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push
 
       - name: キューの形式を検証する
         if: ${{ always() && !env.DRY_RUN }}
@@ -114,7 +114,7 @@ jobs:
           if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
           git commit -m "chore(美容): 投稿を予約（$(TZ=Asia/Tokyo date +%F)）"
           for i in 1 2 3 4; do
-            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
             sleep $((2 ** i))
           done
           exit 1
