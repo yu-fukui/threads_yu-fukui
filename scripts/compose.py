@@ -204,6 +204,12 @@ PR_HOUR = 6
 
 PR_MARKERS = ("【PR】", "#PR", "＃PR", "[PR]")
 
+
+def 本文にPR(text: str) -> str:
+    """楽天の投稿の本文の最後に「PR」を付ける（2026-11-03 代表「本文の最後にPR」）。すでに末尾にあれば足さない。"""
+    t = text.rstrip()
+    return t if t.endswith("PR") else t + "\n\nPR"
+
 URL_IN_TEXT = re.compile(r"https?://\S+")
 
 # 楽天の検索で入れた商品には、メモの先頭に「[未使用]」が付く
@@ -1532,6 +1538,13 @@ def main() -> None:
                     )
                 text = 宿の本文(hotel["raw"], 見出し)
                 thread = 宿の返信(hotel["raw"], target_date)
+
+            # 楽天の投稿（道具の紹介・お得日・クーポン・宿のまとめ）は、本文の最後に PR を付ける。冒頭には付けない
+            # （2026-11-03 代表「本文の最後にPR」。冒頭の【PR】は 9/25 の決定どおり外す。返信の PR もそのまま）
+            if (product and hour == PR_HOUR) or (deal and hour == DEAL_HOUR) or ((mugi or hotel) and hour == HOTEL_HOUR):
+                text = 本文にPR(text)
+                if len(text) > 500:
+                    落とす(f"{hour}:00 の本文が PR を足すと 500 字を超えます（{len(text)} 字）。")
 
             # 同じ催しを 1 日に 2 本出していないかを、ここで機械的に確かめる。
             # 指示だけだと読み飛ばされる。

@@ -570,7 +570,7 @@ def 予備で埋める() -> None:
         見せる(f"予備が0件です。{日:%m/%d} の美容 {len(空き)}枠は空のままです")
         return
     新 = [{
-        "id": i, "text": p["本文"], "scheduled_at": f"{日:%Y-%m-%d}T{h}:00+09:00",
+        "id": i, "text": p["本文"].rstrip() + "\n\nPR", "scheduled_at": f"{日:%Y-%m-%d}T{h}:00+09:00",
         "thread": [p["返信"]], "note": f"運営事業部・美容／{p.get('商品')}／切り口：{p.get('切り口')}／予備から",
     } for (h, i), p in zip(空き, 使う)]
     if os.environ.get("DRY_RUN") == "1":
@@ -700,7 +700,8 @@ def main() -> None:
     for (h, i), p in zip(空き, 通った):
         新.append({
             "id": i,
-            "text": p["本文"].strip(),
+            # 本文の最後に PR（2026-11-03 代表「美容の商品紹介（アフィリエイト）も本文の最後に PR」）。AI には書かせず、ここで足す
+            "text": p["本文"].strip() + "\n\nPR",
             "scheduled_at": f"{日:%Y-%m-%d}T{h}:00+09:00",
             "thread": [p["返信"].replace("LINK", link).strip()],
             "note": f"運営事業部・美容／{事実.get('短い商品名')}／切り口：{p.get('誰')}／{決めた人}が決定",

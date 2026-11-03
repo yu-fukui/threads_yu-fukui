@@ -144,7 +144,7 @@ def main() -> None:
     宿 = max(宿ごと.values(), key=lambda v: max(int(x["率"]) for x in v))
     item = {
         "id": f"p-coupon-{日:%m%d}-{hour:02d}",
-        "text": 本文(宿, style),
+        "text": 本文(宿, style).rstrip() + "\n\nPR",  # 本文の最後に PR（2026-11-03 代表）
         "scheduled_at": at,
         "thread": [返信(宿, style)],
         "note": f"{印}{','.join(x['鍵'] for x in 宿)}／楽天トラベル（PR）。クーポンページで確かめた内容をテンプレートで組み立て（2026-09-30 代表指示）",
