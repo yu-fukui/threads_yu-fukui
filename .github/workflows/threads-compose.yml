@@ -50,6 +50,12 @@ jobs:
       - name: 翌日ぶんの 3 本を作る
         run: python scripts/compose.py
 
+      # 7時・13時・15時の宿（福井・石川・ぎふあいちを日ごとに回す。AI は使わない。2026-11-03 代表）
+      - name: 宿の3本を足す
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: python "scripts/三県の宿.py"
+
       # 楽天トラベルの40%OFF以上のクーポンがあれば、明日の 19:00 に1本だけ紹介を足す
       # （クーポンは x-yu__fukui-bot が週1回集める。2026-09-30 代表指示）
       - name: 大きいクーポンの紹介を足す
