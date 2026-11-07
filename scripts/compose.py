@@ -388,6 +388,32 @@ def recent_texts(entries: list[dict], count: int | None = None) -> str:
     return "\n".join(parts)
 
 
+# 期間のある季節もの（紅葉・ライトアップ・イルミネーション・冬の催し）は、期間中に週1回ずつ出す（2026-11-07 代表
+# 「紅葉、イルミネーションなどの期間限定・季節限定イベントは週1ペースで複数回投稿して」。福井のおでかけ #362 と同じ考え）。
+季節の語 = re.compile(r"紅葉|もみじ狩り|ライトアップ|イルミネーション|イルミ|ツリーファンタジー|クリスマスマーケット|クリスマスツリー"
+                    r"|点灯|雪まつり|雪灯|冬の(?:催し|祭|まつり|イベント)|ウィンター|ウインター")
+
+
+def 季節の週1(entries: list[dict], target_date) -> str:
+    """17:00 に出した季節もので、前回から7〜31日たったもの（前回の1行目つき）。作成に週1の候補として渡す。"""
+    最後: dict[str, tuple[str, str]] = {}
+    for e in entries:
+        at = str(e.get("scheduled_at") or "")
+        if not at[11:13] == f"{OUTING_HOUR:02d}" or not 季節の語.search(str(e.get("text") or "")):
+            continue
+        try:
+            差 = (target_date - datetime.strptime(at[:10], "%Y-%m-%d").date()).days
+        except ValueError:
+            continue
+        一行目 = (e.get("text") or "").split("\n")[0].strip()
+        for n in re.findall(r"「([^「」]{3,40})」", str(e.get("text") or "")):
+            if abs(差) < 7:
+                最後[n] = ("", "")   # 前後7日に出している・出す予定
+            elif 7 <= 差 <= 31 and 最後.get(n, ("0",))[0] != "" and at[:10] > 最後.get(n, ("0000",))[0]:
+                最後[n] = (at[:10], 一行目)
+    return "\n".join(f"- 「{n}」（前回 {d}：{l[:60]}）" for n, (d, l) in sorted(最後.items(), key=lambda x: x[1][0]) if d)
+
+
 def find_filled(entries: list[dict], target_date) -> dict[int, dict]:
     """対象日にすでに予約が入っている枠を、時 -> 投稿 の形で返す。"""
     prefix = target_date.isoformat()
@@ -602,6 +628,9 @@ def build_prompt(
         "材料は下の「ネタ帳」から取ります。**出典が無い材料はこの枠で使わないこと。**",
         "",
         "- **始まってから30日をこえた催し・上映・展示は選ばない**（2026-11-04 代表「4ヶ月前のイベントは出さない」）。会期の長いものは、始まってすぐか、終わりの7日前からの「まもなく終わり」の知らせだけ",
+        "- **例外：紅葉・ライトアップ・イルミネーション・冬の催しなど、期間が2週間以上の季節ものは、期間中に週1回ずつ出す**（2026-11-07 代表「期間限定・季節限定イベントは週1ペースで複数回投稿して」）。"
+        "前回から7日あける。毎回切り口を変える（見ごろ・点灯時間・新しい演出・料金・アクセス・駐車場など、材料にある別の事実）。前回と同じ売り・同じ言い回しは使わない。"
+        "最後の週は「◯月◯日まで」の知らせに。期間・日程は材料（公式）で確かめた今年のものだけ。下の「週1で出す季節もの」に材料があれば、先に選ぶ",
         "- **本文に地名を必ず入れる。** 「福井」「鯖江」「越前」「小浜」「勝山」など県名か市町名",
         "- **イベント名・店名・施設名も、できるだけ本文に入れる**",
         "- 本文または thread の最後に **`出典元：URL`** を置く（URLは材料にあるものをそのまま使う。作らない）",
@@ -1334,7 +1363,7 @@ def main() -> None:
     prompt = build_prompt(
         board,
         neta,
-        recent_texts(entries),
+        recent_texts(entries) + (f"\n\n### 週1で出す季節もの（17:00。前回から7日以上たった。2026-11-07 代表）\n{季節}" if (季節 := 季節の週1(entries, target_date)) else ""),
         target_date,
         needed,
         filled,
