@@ -1,0 +1,56 @@
+name: AI活用の投稿の案を作る
+
+# 2026-11-23 代表「A：この案で始める・費用は yu の予算に入れる」（統括経由）
+# 毎晩1回、公開リポジトリの最近の変更を材料に、翌日ぶんの案を作る（A=yu 1本・B=新アカウント 2本）。
+# ここでは queue に入れない。案は posts/AI活用の案.jsonl に入り、毎朝 4:30 の作業がおでかけダッシュボードの
+# 判断待ちに出す。代表が「出す」を押したものだけが queue に入る（始めの1〜2週間）。
+on:
+  repository_dispatch:
+    types: [ai-posts]
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "作る日（YYYY-MM-DD。空なら翌日）"
+        required: false
+  schedule:
+    - cron: "40 13 * * *"   # 22:40 JST（GitHub の定時は遅れることがある。翌朝 4:30 までに入れば足りる）
+
+concurrency:
+  group: threads-post
+  cancel-in-progress: false
+
+jobs:
+  make:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      ANTHROPIC_MODEL: claude-sonnet-5-5
+      ANTHROPIC_EFFORT: low
+      ANTHROPIC_MAX_TOKENS: "8000"
+      GITHUB_TOKEN: ${{ github.token }}
+      TARGET_DATE: ${{ github.event.inputs.target_date || github.event.client_payload.target_date }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 案を作る
+        run: python "scripts/AI活用の投稿.py"
+      - name: コミットする
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in "posts/AI活用の案.jsonl" "state/AI活用_使った材料.json" state/usage.jsonl; do
+            [ -e "$f" ] && git add -f -- "$f"
+          done
+          if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
+          git commit -m "chore(AI活用): 案を作る（$(TZ=Asia/Tokyo date +%F)）"
+          for i in 1 2 3 4; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            sleep $((2 ** i))
+          done
+          exit 1
