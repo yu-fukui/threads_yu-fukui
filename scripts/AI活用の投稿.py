@@ -1,8 +1,8 @@
 """AI活用の毎日の投稿の「案」を作る（2026-11-23 代表「A：この案で始める・費用は yu の予算に入れる」、統括経由）
 
 毎晩1回。公開リポジトリの最近の変更（コミットの題と説明）を材料に、
-  A … yu（このアカウント）1本：つくり手として感じたこと（翌日 20:30）
-  B … 新アカウント 2本：やり方・失敗と直し方（翌日 12:10・21:10）
+  A … yu（このアカウント）1本：つくり手として感じたこと（2日後の 20:30）
+  B … 新アカウント 2本：やり方・失敗と直し方（2日後の 12:10・21:10）
 を Sonnet＋考える量 low で作り、機械の検査を通ったものだけを posts/AI活用の案.jsonl に足す。
 
 **ここでは queue に入れない。** 始めの1〜2週間は、毎朝の作業（fukui-fukui/threads の scripts/判断待ち.py --yu）が
@@ -210,7 +210,8 @@ def 案を読む() -> list[dict]:
 
 def main() -> None:
     今 = datetime.now(JST)
-    日 = (今 + timedelta(days=1)).date() if 今.hour >= 7 else 今.date()
+    # 2日先の分を作る：22:40 に作る → 翌朝 4:30 に判断待ちへ → 代表が答える → その次の朝 4:30 に queue へ → その日に出る
+    日 = (今 + timedelta(days=2 if 今.hour >= 7 else 1)).date()
     if (t := os.environ.get("TARGET_DATE", "").strip()):
         日 = datetime.strptime(t, "%Y-%m-%d").date()
     既に = 案を読む()
