@@ -74,11 +74,15 @@ jobs:
         run: python "scripts/クーポンの投稿.py"
 
       - name: キューの形式を検証する
+        id: validate
+        if: ${{ !cancelled() }}
         env:
           PYTHONPATH: src
         run: python -m threads_bot validate
 
+      # 作成（AI）が失敗しても、AI を使わずに足した宿などは残す（2026-11-23：AI の使用量の上限で作成が止まり、宿の3本が残らなかった）
       - name: キューをコミットする
+        if: ${{ !cancelled() && steps.validate.outcome != 'failure' }}
         run: |
           ./scripts/commit_file.sh posts/queue.jsonl "chore(queue): 翌日ぶんの 3 本を追加"
 
