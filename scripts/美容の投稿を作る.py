@@ -598,6 +598,10 @@ def main() -> None:
     if not api_key:
         止まる("ANTHROPIC_API_KEY がありません")
     日 = 埋める日()
+    # 2026-12 は 20時を年末のふるさと納税にする（2026-11-23 統括決定。scripts/年末のふるさと.py が作る）。美容は作らない
+    if 日.year == 2026 and 日.month == 12:
+        print(f"{日} は12月なので、20:00 は年末のふるさと納税の枠です。美容は作りません。")
+        return
     ids = [枠のid(日, h) for h in 枠]
     lines = queue_を読む()
     すでに = 入っているid(lines)

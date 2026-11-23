@@ -56,6 +56,12 @@ jobs:
         continue-on-error: true
         run: python "scripts/三県の宿.py"
 
+      # 12月の 20時は、美容のかわりに福井のふるさと納税（AI は使わない。2026-11-23 統括決定）
+      - name: 年末のふるさと納税を足す
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: python "scripts/年末のふるさと.py"
+
       # 楽天トラベルの40%OFF以上のクーポンがあれば、明日の 19:00 に1本だけ紹介を足す
       # （クーポンは x-yu__fukui-bot が週1回集める。2026-09-30 代表指示）
       - name: 大きいクーポンの紹介を足す
