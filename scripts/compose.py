@@ -459,6 +459,7 @@ def build_prompt(
     mugi: dict | None = None,
     deal: dict | None = None,
     deal_hour: int | None = None,
+    近くの宿: list | None = None,
 ) -> str:
     def _枠の行(hour, pillar, form, aim):
         行 = f"- {hour}:00 ｜ 深さ: {DEPTH.get(hour, 'B')} ｜ 柱: {pillar} ｜ 型: {form} ｜ ねらい: {aim}"
@@ -658,6 +659,7 @@ def build_prompt(
         "",
         "並べて読んでも重複に見えないようにします。**同じ文章にはしないこと。**",
         "",
+        *近くの宿の指示(target_date, 近くの宿 or []),
         "材料が無い日は、無理に作らず柱を「Instagram の運用ノウハウ」に読み替えてください。",
         "",
         "## 連投の 1 本目（本文）について（2026-09-18 代表指示）",
@@ -845,7 +847,7 @@ def parse_posts(text: str) -> list[dict]:
     posts = []
     for body in re.findall(r"@@@POST[ \t]*\n(.*?)\n?@@@END", text, re.S):
         item = {"hour": None, "note": "", "text": "", "thread": []}
-        tokens = re.split(r"^(HOUR:|NOTE:|TEXT:|THREAD:)", body, flags=re.M)
+        tokens = re.split(r"^(HOUR:|NOTE:|TEXT:|THREAD:|HOTEL:)", body, flags=re.M)
         for key, value in zip(tokens[1::2], tokens[2::2]):
             value = value.strip()
             if key == "HOUR:":
@@ -858,6 +860,9 @@ def parse_posts(text: str) -> list[dict]:
                 item["text"] = value
             elif key == "THREAD:" and value:
                 item["thread"].append(value)
+            elif key == "HOTEL:":
+                m = re.search(r"\d{3,}", value)
+                item["hotel_no"] = m.group(0) if m else ""
         if item["hour"] is not None and item["text"]:
             posts.append(item)
     return posts
@@ -933,6 +938,78 @@ HOTEL_HOUR = 15
 # 17:00 の「福井のおでかけ情報」は 1週間以上先の催しを扱う（2026-09-26 代表指示）。
 # 指示だけだと直前の催しが通る（9/25「明日9月26日…」、9/26「今日と明日の2日間」）。
 OUTING_HOUR = 17
+
+# 17:00 の福井の催しに「近くに泊まるなら」の宿を1軒、返信の2本目で添える
+# （2026-11-23 統括決定・代表「YU アカウントはアフィリエイトを伸ばす施策を」）。
+# 遠くから来る人も来そうな催し（会期の長い展示・イルミネーション・祭り）だけ。地元向けの催し・掲載中の有料案件の催しには付けない。
+# 17時の閲覧が下がったら止める（近くの宿の始まり を先の日にする）
+近くの宿の始まり = datetime(2026, 11, 26).date()
+_福井のqueue = "https://raw.githubusercontent.com/fukui-fukui/threads/main/posts/queue.jsonl"
+
+
+def 近くの宿の指示(target_date, 宿たち: list) -> list[str]:
+    if target_date < 近くの宿の始まり or not 宿たち:
+        return []
+    一覧 = "\n".join(f"  {h.get('番号')}｜{宿.見せる名(h)}｜{h.get('エリア')}" for h in 宿たち[:80])
+    return [
+        "### 17:00 に「近くに泊まるなら」の宿を添える（2026-11-23 統括決定）",
+        "",
+        "17:00 の催しが、**遠くから来る人も来そうなもの**（会期の長い展示・イルミネーション・ライトアップ・祭り・大きな催し）なら、",
+        "17:00 の @@@POST に `HOTEL: 番号` の行を足し、下の宿から**催しの場所にいちばん近い1軒**の番号を書いてください。",
+        "地元の人向けの催し（教室・講座・体験会・地域の集まり・小さな行事）・お店の紹介・すぐ近くに宿が無いときは `HOTEL: なし`。",
+        "宿のことは本文にも THREAD にも書かない（こちらで返信の2本目に、楽天トラベルの事実だけで足します）。",
+        "",
+        "宿（番号｜名前｜エリア）:",
+        一覧,
+        "",
+    ]
+
+
+def _有料案件の名前(target_date) -> set[str]:
+    """福井のおでかけで掲載中の有料案件（note に「有料案件」）の催しの名前（「」の中）。読めなければ空。"""
+    try:
+        with urllib.request.urlopen(urllib.request.Request(_福井のqueue, headers={"User-Agent": "compose"}), timeout=30) as res:
+            lines = res.read().decode("utf-8").splitlines()
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return set()
+    名 = set()
+    for l in lines:
+        if "有料案件" not in l:
+            continue
+        try:
+            e = json.loads(l)
+        except json.JSONDecodeError:
+            continue
+        if "有料案件" in str(e.get("note") or ""):
+            名 |= {n for n in re.findall(r"「([^」]{2,40})」", str(e.get("text") or ""))}
+    return 名
+
+
+def 近くの宿の返信(h: dict) -> str:
+    """宿1軒の返信。楽天トラベルの事実（名前・エリア・最寄駅）とリンクだけ。最後に空行と PR。"""
+    駅 = str(h.get("最寄駅") or "").strip()
+    行 = [f"近くに泊まるなら、{宿.見せる名(h)}（{h.get('エリア')}）。"]
+    if 駅:
+        行.append(f"最寄り駅は{駅.split('（')[0]}駅です。")
+    return "\n".join(行) + "\n" + 宿.宿のリンク先(h, 宿.短縮を読む()) + "\n\nPR"
+
+
+def 近くの宿を添える(text: str, thread: list, 番号: str, 宿たち: list, target_date) -> list:
+    if not 番号 or not 宿たち:
+        return thread
+    h = next((x for x in 宿たち if str(x.get("番号")) == str(番号)), None)
+    if not h:
+        print(f"::notice::17:00 の HOTEL: {番号} は宿のリストに無いので、宿は添えません。")
+        return thread
+    有料 = [n for n in _有料案件の名前(target_date) if n in text]
+    if 有料:
+        print(f"::notice::17:00 は掲載中の有料案件の催し（{有料[0]}）なので、宿は添えません。")
+        return thread
+    返 = 近くの宿の返信(h)
+    if len(返) > 500 or not 宿.宿のリンク先(h, 宿.短縮を読む()).startswith("http"):
+        return thread
+    print(f"17:00 に近くの宿を添えます：{宿.見せる名(h)}")
+    return [*thread, 返]
 直前を指す言葉 = re.compile(
     r"今日|本日|明日|あした|明後日|今夜|今晩|今週末|今週|この週末|まもなく|間もなく"
 )
@@ -1374,6 +1451,7 @@ def main() -> None:
         mugi=mugi,
         deal=deal,
         deal_hour=DEAL_HOUR if deal else None,
+        近くの宿=宿たち,
     )
     posts = generate(api_key, model, prompt, len(needed))
 
@@ -1596,6 +1674,8 @@ def main() -> None:
                 "scheduled_at": f"{target_date.isoformat()}T{hour:02d}:00:00+09:00",
             }
             existing_ids.add(item["id"])
+            if hour == OUTING_HOUR and target_date >= 近くの宿の始まり:
+                thread = 近くの宿を添える(text, thread, post.get("hotel_no", ""), 宿たち, target_date)
             if thread:
                 item["thread"] = thread
             if post.get("note"):
