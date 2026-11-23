@@ -861,8 +861,7 @@ def parse_posts(text: str) -> list[dict]:
             elif key == "THREAD:" and value:
                 item["thread"].append(value)
             elif key == "HOTEL:":
-                m = re.search(r"\d{3,}", value)
-                item["hotel_no"] = m.group(0) if m else ""
+                item["hotel_no"] = "あり" if value.strip().startswith("あり") else ""
         if item["hour"] is not None and item["text"]:
             posts.append(item)
     return posts
@@ -950,19 +949,47 @@ _福井のqueue = "https://raw.githubusercontent.com/fukui-fukui/threads/main/po
 def 近くの宿の指示(target_date, 宿たち: list) -> list[str]:
     if target_date < 近くの宿の始まり or not 宿たち:
         return []
-    一覧 = "\n".join(f"  {h.get('番号')}｜{宿.見せる名(h)}｜{h.get('エリア')}" for h in 宿たち[:80])
     return [
-        "### 17:00 に「近くに泊まるなら」の宿を添える（2026-11-23 統括決定）",
+        "### 17:00 の「泊まりで来るなら」（2026-11-23 統括決定）",
         "",
         "17:00 の催しが、**遠くから来る人も来そうなもの**（会期の長い展示・イルミネーション・ライトアップ・祭り・大きな催し）なら、",
-        "17:00 の @@@POST に `HOTEL: 番号` の行を足し、下の宿から**催しの場所にいちばん近い1軒**の番号を書いてください。",
-        "地元の人向けの催し（教室・講座・体験会・地域の集まり・小さな行事）・お店の紹介・すぐ近くに宿が無いときは `HOTEL: なし`。",
-        "宿のことは本文にも THREAD にも書かない（こちらで返信の2本目に、楽天トラベルの事実だけで足します）。",
-        "",
-        "宿（番号｜名前｜エリア）:",
-        一覧,
+        "17:00 の @@@POST に `HOTEL: あり` の行を足してください。地元の人向けの催し（教室・講座・体験会・地域の集まり・小さな行事）・お店の紹介は `HOTEL: なし`。",
+        "宿のことは本文にも THREAD にも書かない（こちらで、催しの市町と同じエリアの宿を1軒、返信の2本目に楽天トラベルの事実だけで足します）。",
         "",
     ]
+
+
+# 催しの市町 → 宿のリストのエリア（2026-11-23 運用部・福井：いちばん近い宿は AI に選ばせず、市町で機械で選ぶ。
+# 距離は出典に無いので「近くに」とは書かず、エリアの名前で示す）
+_市町からエリア = [
+    ("あわら市", ["あわら・三国"]), ("坂井市", ["あわら・三国", "坂井・丸岡"]), ("福井市", ["福井市"]),
+    ("永平寺町", ["永平寺"]), ("勝山市", ["勝山"]), ("大野市", ["大野"]), ("鯖江市", ["鯖江"]),
+    ("越前市", ["越前市"]), ("南越前町", ["南越前"]), ("越前町", ["越前海岸"]), ("敦賀市", ["敦賀"]),
+    ("美浜町", ["美浜"]), ("若狭町", ["若狭三方"]), ("小浜市", ["小浜"]), ("おおい町", ["おおい"]), ("高浜町", ["高浜"]),
+]
+# 催しの一覧サイト（公式ではない）。出典がこれだけの催しには宿を付けない（2026-11-23 運用部・福井）
+_一覧サイト = ("walkerplus.com", "jorudan.co.jp", "iko-yo.net", "enjoytokyo", "jalan.net", "tripadvisor", "asoview.com")
+
+
+def 催しの市町(text: str) -> str | None:
+    """本文に出てくる市町のうち、最初のもの（「南越前町」を「越前町」と取り違えないよう、長い名前から先に見る）。"""
+    出 = []
+    for 名, _ in sorted(_市町からエリア, key=lambda x: -len(x[0])):
+        i = text.find(名)
+        if i >= 0 and not any(i >= a and i < a + len(b) for a, b in 出):
+            出.append((i, 名))
+    return min(出)[1] if 出 else None
+
+
+def 宿を選ぶ(text: str, 宿たち: list, target_date) -> dict | None:
+    市町 = 催しの市町(text)
+    if not 市町:
+        return None
+    エリア = dict(_市町からエリア)[市町]
+    候補 = sorted((h for h in 宿たち if h.get("エリア") in エリア), key=lambda h: str(h.get("番号")))
+    if not 候補:
+        return None
+    return 候補[target_date.toordinal() % len(候補)]
 
 
 def _有料案件の名前(target_date) -> set[str]:
@@ -986,20 +1013,25 @@ def _有料案件の名前(target_date) -> set[str]:
 
 
 def 近くの宿の返信(h: dict) -> str:
-    """宿1軒の返信。楽天トラベルの事実（名前・エリア・最寄駅）とリンクだけ。最後に空行と PR。"""
+    """宿1軒の返信。楽天トラベルの事実（名前・エリア・最寄駅）とリンクだけ。最後に空行と PR。
+    距離は出典に無いので「近くに」とは書かない（2026-11-23 運用部・福井）。"""
     駅 = str(h.get("最寄駅") or "").strip()
-    行 = [f"近くに泊まるなら、{宿.見せる名(h)}（{h.get('エリア')}）。"]
+    行 = [f"泊まりで来るなら、{宿.見せる名(h)}（{h.get('エリア')}）。"]
     if 駅:
         行.append(f"最寄り駅は{駅.split('（')[0]}駅です。")
     return "\n".join(行) + "\n" + 宿.宿のリンク先(h, 宿.短縮を読む()) + "\n\nPR"
 
 
-def 近くの宿を添える(text: str, thread: list, 番号: str, 宿たち: list, target_date) -> list:
-    if not 番号 or not 宿たち:
+def 近くの宿を添える(text: str, thread: list, あり: str, 宿たち: list, target_date) -> list:
+    if あり != "あり" or not 宿たち:
         return thread
-    h = next((x for x in 宿たち if str(x.get("番号")) == str(番号)), None)
+    出典 = re.findall(r"https?://[^\s]+", "\n".join([text, *thread]))
+    if not 出典 or all(any(d in u for d in _一覧サイト) for u in 出典):
+        print("::notice::17:00 の出典が催しの一覧サイトだけなので、宿は添えません。")
+        return thread
+    h = 宿を選ぶ(text, 宿たち, target_date)
     if not h:
-        print(f"::notice::17:00 の HOTEL: {番号} は宿のリストに無いので、宿は添えません。")
+        print("::notice::17:00 の催しの市町が分からない（または同じエリアに宿が無い）ので、宿は添えません。")
         return thread
     有料 = [n for n in _有料案件の名前(target_date) if n in text]
     if 有料:
@@ -1008,23 +1040,8 @@ def 近くの宿を添える(text: str, thread: list, 番号: str, 宿たち: li
     返 = 近くの宿の返信(h)
     if len(返) > 500 or not 宿.宿のリンク先(h, 宿.短縮を読む()).startswith("http"):
         return thread
-    print(f"17:00 に近くの宿を添えます：{宿.見せる名(h)}")
+    print(f"17:00 に宿を添えます：{宿.見せる名(h)}（{h.get('エリア')}）")
     return [*thread, 返]
-直前を指す言葉 = re.compile(
-    r"今日|本日|明日|あした|明後日|今夜|今晩|今週末|今週|この週末|まもなく|間もなく"
-)
-
-# 【PR】の印。本文の先頭に無ければ止める（ステマ規制）。
-if "PR_MARKERS" not in dir():
-    PR_MARKERS = ("【PR】", "#PR", "＃PR", "[PR]")
-if "URL_IN_TEXT" not in dir():
-    URL_IN_TEXT = re.compile(r"https?://\S+")
-
-# 泊まっていない宿を「泊まった」と書かせない。
-# 楽天トラベルに載っている情報を読んで書くだけなので、体験として書くと嘘になる。
-STAYED_VOICE = re.compile(
-    r"泊まっ(た|て)|宿泊した|行ってき|訪れた|使ってみ|入ってみ|食べてき"
-)
 
 
 # 宿の枠の2つの型（2026-09-24 代表判断）。どちらが稼ぐかを数字で比べる。
