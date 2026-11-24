@@ -1,14 +1,19 @@
 {
   "リポジトリ": "yu-fukui/threads_yu-fukui",
-  "作成時刻": "2026-11-24 07:47 JST",
+  "作成時刻": "2026-11-24 20:11 JST",
   "今日": "2026-11-24",
   "状態": "ok",
   "明日のキュー": {
     "対象日": "2026-11-25",
-    "本数": 0,
+    "本数": 4,
     "予定本数": 7,
-    "足りない": 7,
-    "時刻": [],
+    "足りない": 3,
+    "時刻": [
+      "07:00",
+      "13:00",
+      "15:00",
+      "20:00"
+    ],
     "同じ時刻が2本以上": [],
     "読めない行": [
       1,
@@ -30,7 +35,48 @@
       17,
       18
     ],
-    "投稿": []
+    "投稿": [
+      {
+        "id": "p-2026112507-bimf",
+        "時刻": "07:00",
+        "1行目": "【福井】あわら温泉と東尋坊のあたりに泊まれる宿3選",
+        "文字数": 107,
+        "本文にリンク": false,
+        "続きにリンク": true,
+        "出典元あり": false,
+        "PRあり": true
+      },
+      {
+        "id": "p-2026112513-p5b9",
+        "時刻": "13:00",
+        "1行目": "【石川】温泉が引いてある宿3選",
+        "文字数": 91,
+        "本文にリンク": false,
+        "続きにリンク": true,
+        "出典元あり": false,
+        "PRあり": true
+      },
+      {
+        "id": "p-2026112515-mn2c",
+        "時刻": "15:00",
+        "1行目": "【福井】大浴場がある宿3選",
+        "文字数": 74,
+        "本文にリンク": false,
+        "続きにリンク": true,
+        "出典元あり": false,
+        "PRあり": true
+      },
+      {
+        "id": "p-beauty-1125-20",
+        "時刻": "20:00",
+        "1行目": "夜は、化粧水を手のひらでじっくり押さえ込みたい。",
+        "文字数": 111,
+        "本文にリンク": false,
+        "続きにリンク": true,
+        "出典元あり": false,
+        "PRあり": true
+      }
+    ]
   },
   "ワークフロー": [
     {
@@ -38,16 +84,25 @@
       "ファイル": "ai-posts.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-23 04:55 JST",
-        "結果": "success",
-        "きっかけ": "workflow_dispatch",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45063450441"
+        "時刻": "2026-11-24 10:12 JST",
+        "結果": "failure",
+        "きっかけ": "schedule",
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45303324457"
       },
       "最後の成功": "2026-11-23 04:55 JST",
-      "今日走ったか": false,
-      "24時間の実行": 0,
-      "24時間の失敗": 0,
-      "判定": "成功"
+      "今日走ったか": true,
+      "24時間の実行": 1,
+      "24時間の失敗": 1,
+      "最後の失敗": {
+        "時刻": "2026-11-24 10:12 JST",
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45303324457",
+        "理由": [
+          "make: Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog",
+          "make: Process completed with exit code 1.",
+          "make: Anthropic API エラー (400): {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-12-01 at 00:00 UTC.\"},\"requ"
+        ]
+      },
+      "判定": "失敗"
     },
     {
       "名前": "利用者層を取る",
@@ -61,7 +116,7 @@
       },
       "最後の成功": "2026-11-23 14:46 JST",
       "今日走ったか": false,
-      "24時間の実行": 1,
+      "24時間の実行": 0,
       "24時間の失敗": 0,
       "判定": "成功"
     },
@@ -95,14 +150,14 @@
       "ファイル": "beauty-posts.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-23 09:03 JST",
+        "時刻": "2026-11-24 13:13 JST",
         "結果": "success",
         "きっかけ": "schedule",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45086558308"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45324918923"
       },
-      "最後の成功": "2026-11-23 09:03 JST",
-      "今日走ったか": false,
-      "24時間の実行": 2,
+      "最後の成功": "2026-11-24 13:13 JST",
+      "今日走ったか": true,
+      "24時間の実行": 4,
       "24時間の失敗": 0,
       "最後の失敗": {
         "時刻": "2026-11-23 07:21 JST",
@@ -121,12 +176,12 @@
       "ファイル": "health-snapshot.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-24 07:47 JST",
+        "時刻": "2026-11-24 20:11 JST",
         "結果": "in_progress",
-        "きっかけ": "schedule",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45282979331"
+        "きっかけ": "workflow_run",
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45381928755"
       },
-      "最後の成功": "2026-11-23 20:11 JST",
+      "最後の成功": "2026-11-24 07:47 JST",
       "今日走ったか": true,
       "24時間の実行": 2,
       "24時間の失敗": 0,
@@ -141,13 +196,13 @@
       "ファイル": "neta-collect.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-23 11:25 JST",
+        "時刻": "2026-11-24 14:49 JST",
         "結果": "success",
         "きっかけ": "schedule",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45100121811"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45336028360"
       },
-      "最後の成功": "2026-11-23 11:25 JST",
-      "今日走ったか": false,
+      "最後の成功": "2026-11-24 14:49 JST",
+      "今日走ったか": true,
       "24時間の実行": 1,
       "24時間の失敗": 0,
       "最後の失敗": {
@@ -168,7 +223,7 @@
       },
       "最後の成功": "2026-11-23 20:47 JST",
       "今日走ったか": false,
-      "24時間の実行": 8,
+      "24時間の実行": 1,
       "24時間の失敗": 0,
       "判定": "成功"
     },
@@ -193,22 +248,22 @@
       "ファイル": "threads-compose.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-23 20:10 JST",
+        "時刻": "2026-11-24 20:10 JST",
         "結果": "failure",
         "きっかけ": "repository_dispatch",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45162740129"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45381722163"
       },
       "最後の成功": "2026-11-22 20:10 JST",
-      "今日走ったか": false,
+      "今日走ったか": true,
       "24時間の実行": 1,
       "24時間の失敗": 1,
       "最後の失敗": {
-        "時刻": "2026-11-23 20:10 JST",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45162740129",
+        "時刻": "2026-11-24 20:10 JST",
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45381722163",
         "理由": [
           "compose: Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog",
           "compose: Process completed with exit code 1.",
-          "compose: Anthropic API エラー (400): {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"You have reached your specified API usage limits. You will regain access on 2026-12-01 at 00:00 UTC.\"},\"requ"
+          "compose: 11:00 は作れませんでした（11:00 の出典が催しの一覧サイトだけ（または出典が無い）です。公式で確かめたものだけ出します。）。この枠は空のままにします。"
         ]
       },
       "判定": "失敗"
@@ -218,12 +273,12 @@
       "ファイル": "threads-post.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-24 07:40 JST",
+        "時刻": "2026-11-24 20:10 JST",
         "結果": "success",
         "きっかけ": "repository_dispatch",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45281902855"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45381712781"
       },
-      "最後の成功": "2026-11-24 07:40 JST",
+      "最後の成功": "2026-11-24 20:10 JST",
       "今日走ったか": true,
       "24時間の実行": 100,
       "24時間の失敗": 0,
@@ -250,12 +305,12 @@
       "ファイル": "threads-review.yml",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-24 07:00 JST",
+        "時刻": "2026-11-24 19:15 JST",
         "結果": "success",
-        "きっかけ": "schedule",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45275323110"
+        "きっかけ": "repository_dispatch",
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45373020138"
       },
-      "最後の成功": "2026-11-24 07:00 JST",
+      "最後の成功": "2026-11-24 19:15 JST",
       "今日走ったか": true,
       "24時間の実行": 2,
       "24時間の失敗": 0,
@@ -286,16 +341,16 @@
       "ファイル": "pages-build-deployment",
       "有効": true,
       "最後の実行": {
-        "時刻": "2026-11-24 07:07 JST",
-        "結果": "success",
+        "時刻": "2026-11-24 20:11 JST",
+        "結果": "in_progress",
         "きっかけ": "dynamic",
-        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45276508301"
+        "URL": "https://github.com/yu-fukui/threads_yu-fukui/actions/runs/45381914047"
       },
-      "最後の成功": "2026-11-24 07:07 JST",
+      "最後の成功": "2026-11-24 20:01 JST",
       "今日走ったか": true,
-      "24時間の実行": 20,
+      "24時間の実行": 14,
       "24時間の失敗": 0,
-      "判定": "成功"
+      "判定": "実行中"
     }
   ]
 }
